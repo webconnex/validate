@@ -14,10 +14,10 @@
 
 package validate
 
-func IsValidDomain(domain string, reverse bool) bool {
-	var count = len(domain)
+func readDomain(domain string) (int, int, bool) {
+	count := len(domain)
 	if count == 0 {
-		return false
+		return 0, 0, false
 	}
 	var last rune
 	var fdot, dot int
@@ -48,14 +48,27 @@ func IsValidDomain(domain string, reverse bool) bool {
 		last = c
 		count--
 	}
-	var valid bool
-	if count == 0 && // Reached End
-		dot > 0 { // We have a '.'
-		if reverse {
+	return fdot, dot, count == 0
+}
+
+func IsValidDomain(domain string, reverse bool) bool {
+	fdot, dot, valid := readDomain(domain)
+	if valid {
+		if dot == 0 { // We don't have a '.'
+			valid = false
+		} else if reverse {
 			valid = IsValidTLD(domain[:fdot])
 		} else {
 			valid = IsValidTLD(domain[dot+1:])
 		}
+	}
+	return valid
+}
+
+func IsValidSubdomain(subdomain string, allowSep bool) bool {
+	_, dot, valid := readDomain(subdomain)
+	if valid && dot > 0 != allowSep {
+		valid = false
 	}
 	return valid
 }
