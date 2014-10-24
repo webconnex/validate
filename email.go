@@ -48,6 +48,7 @@ func IsValidEmail(email string) bool {
 		} else if c == '@' {
 			if count == 1 || // '@' is last
 				last == 0 || // '@' is first
+				last == '.' || // '@' after '.'
 				at > 0 { // '@' appears twice
 				break
 			}
